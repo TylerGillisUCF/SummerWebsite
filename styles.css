@@ -1,0 +1,304 @@
+/* =====================================================================
+   styles.css — all styling for the Periphery Passive Engagement exhibit.
+   Design direction: scholarly but inviting — a digital museum label,
+   not a flashy game site. Restrained palette, generous spacing.
+   ===================================================================== */
+
+/* ---- Palette & global tokens ---------------------------------------- */
+:root {
+  --ink: #232021;          /* near-black body text */
+  --ink-soft: #5b5552;     /* muted captions / secondary text */
+  --paper: #f4f0e8;        /* warm museum-wall background */
+  --card: #fbf9f4;         /* slightly lighter panels */
+  --line: #d8d0c2;         /* hairline borders */
+  --accent: #7a3b2e;       /* terracotta — used sparingly */
+  --accent-soft: #a8745f;
+  --shadow: 0 1px 3px rgba(40, 30, 20, 0.12), 0 8px 24px rgba(40, 30, 20, 0.08);
+  --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --sans: "Helvetica Neue", Arial, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Centered, comfortably narrow reading column */
+.wrap {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---- Header / framework intro --------------------------------------- */
+.intro {
+  border-bottom: 1px solid var(--line);
+  padding: 56px 0 40px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
+}
+
+.intro h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  margin: 0 0 0.5em;
+  letter-spacing: 0.01em;
+}
+
+.intro h1::after {
+  /* a thin scholarly rule under the title */
+  content: "";
+  display: block;
+  width: 64px;
+  height: 3px;
+  background: var(--accent);
+  margin-top: 0.5rem;
+}
+
+.lede {
+  font-size: 1.12rem;
+  color: var(--ink-soft);
+  max-width: 70ch;
+  margin: 0;
+}
+
+/* ---- Session (game) tabs -------------------------------------------- */
+.sessions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 36px 0 0;
+}
+
+.sessions button {
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.sessions button:hover { border-color: var(--accent-soft); color: var(--ink); }
+
+.sessions button[aria-selected="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ---- Scene sub-tabs (within a game) --------------------------------- */
+.scenes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 20px 0 0;
+  min-height: 1px; /* keeps layout steady when empty */
+}
+
+.scenes button {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 2px 6px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.scenes button:hover { color: var(--accent); }
+
+.scenes button[aria-selected="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* ---- The scene stage ------------------------------------------------ */
+.stage { margin: 24px 0 64px; }
+
+.scene-head { margin: 0 0 16px; }
+
+.scene-head h2 {
+  font-size: 1.6rem;
+  margin: 0 0 0.2em;
+}
+
+.scene-head .scene-intro {
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  margin: 0;
+  max-width: 68ch;
+}
+
+/* The image + hotspot overlay share one positioned frame so that the
+   percentage-based markers line up with the picture at any size. */
+.scene-figure {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: #cfc7b8; /* placeholder tone before image loads */
+}
+
+.scene-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- Hotspot markers ------------------------------------------------ */
+.hotspot {
+  position: absolute;
+  /* x/y set inline as left/top percentages; translate centers the dot */
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  /* a gentle pulse so the markers feel discoverable */
+  animation: pulse 2.4s ease-out infinite;
+}
+
+.hotspot:hover,
+.hotspot:focus-visible {
+  background: var(--accent-soft);
+  outline: none;
+  animation: none;
+}
+
+.hotspot[aria-expanded="true"] {
+  background: #2f2a28;
+  animation: none;
+  z-index: 6;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(122, 59, 46, 0.5); }
+  70% { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 0 0 12px rgba(122, 59, 46, 0); }
+  100% { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(122, 59, 46, 0); }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hotspot { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ---- Hotspot popup / callout ---------------------------------------- */
+.callout {
+  position: absolute;
+  z-index: 7;
+  width: min(280px, 70vw);
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  /* positioned by app.js relative to the marker */
+  transform: translate(-50%, calc(-100% - 22px));
+}
+
+.callout h3 {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin: 0 0 6px;
+}
+
+.callout p { margin: 0; line-height: 1.5; }
+
+/* little arrow pointing down to the marker */
+.callout::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid var(--card);
+}
+
+/* When a callout would sit off the top of the image, app.js adds .below
+   to flip it underneath the marker instead. */
+.callout.below {
+  transform: translate(-50%, 22px);
+}
+.callout.below::after {
+  bottom: auto;
+  top: -8px;
+  border-top: none;
+  border-bottom: 8px solid var(--card);
+}
+
+.hint {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin: 12px 0 0;
+  letter-spacing: 0.02em;
+}
+
+/* ---- "How this works" footer ---------------------------------------- */
+.how {
+  border-top: 1px solid var(--line);
+  background: var(--card);
+  padding: 48px 0 64px;
+}
+
+.how h2 { font-size: 1.3rem; margin: 0 0 0.5em; }
+
+.how p {
+  color: var(--ink-soft);
+  max-width: 72ch;
+  margin: 0;
+}
+
+.how code {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: #ece6da;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ---- Small screens -------------------------------------------------- */
+@media (max-width: 560px) {
+  .intro { padding: 40px 0 28px; }
+  .hotspot { width: 28px; height: 28px; font-size: 0.85rem; }
+  .callout { width: min(240px, 78vw); }
+}
