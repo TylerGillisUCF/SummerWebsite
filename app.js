@@ -18,6 +18,7 @@
   var sessionTabs = document.getElementById("session-tabs");
   var sceneTabs = document.getElementById("scene-tabs");
   var stage = document.getElementById("stage");
+  var infoBar = document.getElementById("info-bar");
 
   // Our two pieces of "where are we" state.
   var currentSession = 0;
@@ -144,16 +145,74 @@
     callout.appendChild(h3);
     callout.appendChild(p);
 
-    // Anchor the popup to the same spot as the marker.
-    callout.style.left = hotspot.x + "%";
-    callout.style.top = hotspot.y + "%";
-
-    // If the marker sits high on the image, the popup would overflow the
-    // top — so flip it to appear below the marker instead.
-    if (hotspot.y < 30) callout.classList.add("below");
-
+    // Add it first (hidden) so we can measure its real size, then we work
+    // out a position that keeps the whole box inside the viewport.
+    callout.style.visibility = "hidden";
+    callout.style.left = "0px";
+    callout.style.top = "0px";
     figure.appendChild(callout);
+
+    positionCallout(figure, dot, hotspot, callout);
+
+    callout.style.visibility = "visible";
     dot.setAttribute("aria-expanded", "true");
+  }
+
+  // Work out left/top (in pixels, inside the figure) for the popup so that
+  // it never runs off any edge of the screen:
+  //   • near the right edge  -> the box shifts left to stay on screen
+  //   • near the top edge    -> the box opens below the marker
+  //   • near the bottom edge -> the box opens above the marker
+  //   • always clamped so it can't spill past the left or right edge
+  function positionCallout(figure, dot, hotspot, callout) {
+    var figW = figure.clientWidth;
+    var figH = figure.clientHeight;
+    var cw = callout.offsetWidth;
+    var ch = callout.offsetHeight;
+    var r = dot.offsetWidth / 2; // marker radius
+    var gap = 14; // breathing room between marker and box
+    var edge = 8; // keep at least this far from any edge
+
+    // Marker centre, in pixels relative to the figure.
+    var mx = (hotspot.x / 100) * figW;
+    var my = (hotspot.y / 100) * figH;
+
+    // Where the figure currently sits in the viewport — lets us clamp the
+    // box against the actual window, which matters most on phones.
+    var rect = figure.getBoundingClientRect();
+
+    // ---- Horizontal: centre on the marker, then clamp on screen ----
+    var left = mx - cw / 2;
+    var minLeft = Math.max(edge, edge - rect.left); // never past left edge
+    var maxLeft = Math.min(
+      figW - cw - edge,
+      window.innerWidth - edge - cw - rect.left
+    );
+    if (maxLeft < minLeft) maxLeft = minLeft; // box wider than space: pin left
+    if (left < minLeft) left = minLeft;
+    if (left > maxLeft) left = maxLeft;
+
+    // ---- Vertical: prefer ABOVE; flip BELOW if there isn't room ----
+    var aboveTop = my - r - gap - ch;
+    var belowTop = my + r + gap;
+    var roomAbove = rect.top + aboveTop >= edge; // fits above within viewport
+    var below = !roomAbove;
+    var top = below ? belowTop : aboveTop;
+    if (below) callout.classList.add("below");
+
+    // Last-resort clamp so the box is always fully visible vertically.
+    var minTop = edge - rect.top;
+    var maxTop = window.innerHeight - edge - ch - rect.top;
+    if (top < minTop) top = minTop;
+    if (maxTop > minTop && top > maxTop) top = maxTop;
+
+    // ---- Point the arrow back at the marker, even after nudging ----
+    var arrowX = mx - left;
+    arrowX = Math.max(14, Math.min(cw - 14, arrowX));
+    callout.style.setProperty("--arrow-left", arrowX + "px");
+
+    callout.style.left = left + "px";
+    callout.style.top = top + "px";
   }
 
   // Remove every open popup and reset every marker to "closed".
@@ -174,14 +233,68 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") closeAllCallouts();
   });
+  // A popup's position is measured against the window, so close any open
+  // one if the window is resized to avoid it ending up misaligned.
+  window.addEventListener("resize", closeAllCallouts);
 
   // ===================================================================
-  // 5. DRAW EVERYTHING (used on first load and when the game changes).
+  // 5. PER-GAME INFO BAR — light metadata + historical context for the
+  //    currently selected game (the content lives in data.js as `meta`).
+  // ===================================================================
+  function renderInfoBar() {
+    var meta = SESSIONS[currentSession].meta;
+    infoBar.innerHTML = "";
+    if (!meta) return; // a game without metadata simply shows nothing
+
+    var wrap = document.createElement("div");
+    wrap.className = "wrap";
+
+    // Game name
+    var name = document.createElement("div");
+    name.className = "info-game";
+    name.textContent = SESSIONS[currentSession].game;
+    wrap.appendChild(name);
+
+    // Released / Copies sold stat block
+    var stats = document.createElement("dl");
+    stats.className = "info-stats";
+    stats.appendChild(statBlock("Released", meta.released));
+    stats.appendChild(statBlock("Copies sold", meta.copiesSold));
+    wrap.appendChild(stats);
+
+    // Historical context paragraph
+    var context = document.createElement("p");
+    context.className = "info-context";
+    var label = document.createElement("span");
+    label.className = "info-label";
+    label.textContent = "Historical context";
+    context.appendChild(label);
+    context.appendChild(document.createTextNode(meta.context));
+    wrap.appendChild(context);
+
+    infoBar.appendChild(wrap);
+  }
+
+  // Small helper that builds one <dt>/<dd> pair for the stat block.
+  function statBlock(term, value) {
+    var div = document.createElement("div");
+    var dt = document.createElement("dt");
+    dt.textContent = term;
+    var dd = document.createElement("dd");
+    dd.textContent = value;
+    div.appendChild(dt);
+    div.appendChild(dd);
+    return div;
+  }
+
+  // ===================================================================
+  // 6. DRAW EVERYTHING (used on first load and when the game changes).
   // ===================================================================
   function renderAll() {
     renderSessionTabs();
     renderSceneTabs();
     renderScene();
+    renderInfoBar();
   }
 
   // Kick things off once the page is ready.

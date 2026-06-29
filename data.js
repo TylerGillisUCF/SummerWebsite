@@ -40,6 +40,13 @@ const SESSIONS = [
   {
     id: "odyssey",
     game: "Assassin's Creed Odyssey",
+    // meta = the per-game info bar shown at the bottom of the page.
+    meta: {
+      released: "2018 (Ubisoft)",
+      copiesSold: "Over 10 million",
+      context:
+        "Set during the Peloponnesian War (431–404 BCE), the decades-long struggle for hegemony between Athens and Sparta. Ubisoft built the world alongside historians and archaeologists, reconstructing the sanctuaries, cities, and monuments of classical Greece from ancient sources such as Pausanias and Plutarch — and from recent scholarship like the “Gods in Color” research on ancient polychromy.",
+    },
     scenes: [
       {
         id: "odeon",
@@ -110,6 +117,12 @@ const SESSIONS = [
   {
     id: "rdr2",
     game: "Red Dead Redemption 2",
+    meta: {
+      released: "2018 (Rockstar Games)",
+      copiesSold: "Roughly 77 million (confirm against my paper's figure)",
+      context:
+        "Set in 1899, at the closing of the American frontier. The game stages the tension between a vanishing wilderness and an industrializing, urbanizing nation as railroads, cities, and federal power press in on the open range. Its detailed environment is dense enough that players have been shown to learn to identify real fauna simply by playing (Crowley et al.).",
+    },
     scenes: [
       {
         id: "wilderness",
@@ -179,6 +192,13 @@ const SESSIONS = [
   {
     id: "black-flag",
     game: "Assassin's Creed IV: Black Flag",
+    meta: {
+      released: "2013 (Ubisoft)",
+      copiesSold:
+        "Part of a franchise that has sold 200+ million (add a Black Flag-specific figure if I supply one)",
+      context:
+        "Set in the Caribbean during the early-eighteenth-century “Golden Age of Piracy,” amid competing Spanish, British, and French colonial empires. Beneath the pirate fantasy sits the real infrastructure of Atlantic empire — maritime trade routes, colonial port cities, naval power, and the slave economy that underwrote them.",
+    },
     scenes: [
       {
         id: "caribbean",

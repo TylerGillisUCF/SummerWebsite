@@ -27,7 +27,14 @@
           worlds alongside historians and archaeologists, so just moving
           through them teaches you something. Pick a scene below and click the
           hotspots: each one is something you'd pick up passively, without ever
-          being told to study it.
+          being told to study it. This is also why scholars can't afford to
+          look away. These games now reach audiences that dwarf any classroom,
+          so it matters that historians stay present and informed — engaging
+          them seriously as critics, as players, and where possible as
+          collaborators. The painted statues are proof of what's at stake: when
+          scholarship and development meet, new research can travel out of the
+          academy and into popular culture, reaching millions of people who
+          will never read the journal article.
         </p>
       </div>
     </header>
@@ -44,23 +51,11 @@
     </main>
 
     <!-- ============================================================
-         "HOW THIS WORKS" PANEL — the pedagogical payoff
+         PER-GAME INFO BAR — light metadata + historical context for
+         the currently selected game. Filled in by app.js and updated
+         whenever the user switches games. Content lives in data.js.
          ============================================================ -->
-    <footer class="how">
-      <div class="wrap">
-        <h2>How this works</h2>
-        <p>
-          The entire tool you just used is nothing more than a single data file
-          of images plus short annotations, paired with a few dozen lines of
-          display code. Every scene, hotspot, and caption lives in one editable
-          file (<code>data.js</code>); the rest just reads that file and draws
-          it on screen. A student in any field could fork this project, drop in
-          their own images, rewrite the annotations, and have an interactive
-          version of their own work — no frameworks, no build step, no
-          server required.
-        </p>
-      </div>
-    </footer>
+    <footer class="info" id="info-bar" aria-live="polite"></footer>
 
     <!-- Load the content first, then the logic that renders it. -->
     <script src="data.js"></script>

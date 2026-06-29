@@ -215,10 +215,14 @@ body {
 }
 
 /* ---- Hotspot popup / callout ---------------------------------------- */
+/* app.js sets left/top in pixels after measuring the box, so the popup is
+   always kept fully inside the viewport. max-width + wrapping keep it
+   readable on a narrow phone as well as a laptop. */
 .callout {
   position: absolute;
   z-index: 7;
-  width: min(280px, 70vw);
+  width: max-content;
+  max-width: min(280px, 80vw);
   background: var(--card);
   color: var(--ink);
   border: 1px solid var(--line);
@@ -226,8 +230,6 @@ body {
   box-shadow: var(--shadow);
   padding: 14px 16px;
   font-size: 0.95rem;
-  /* positioned by app.js relative to the marker */
-  transform: translate(-50%, calc(-100% - 22px));
 }
 
 .callout h3 {
@@ -239,25 +241,27 @@ body {
   margin: 0 0 6px;
 }
 
-.callout p { margin: 0; line-height: 1.5; }
+.callout p { margin: 0; line-height: 1.5; overflow-wrap: break-word; }
 
-/* little arrow pointing down to the marker */
+/* Little arrow that points at the marker. Its horizontal position is set
+   by app.js (via --arrow-left) so it still points at the dot even after
+   the box has been nudged sideways to stay on screen. */
 .callout::after {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: -8px;
+  left: var(--arrow-left, 50%);
   transform: translateX(-50%);
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
+}
+
+/* Default: box sits ABOVE the marker, arrow points down from its bottom. */
+.callout::after {
+  bottom: -8px;
   border-top: 8px solid var(--card);
 }
 
-/* When a callout would sit off the top of the image, app.js adds .below
-   to flip it underneath the marker instead. */
-.callout.below {
-  transform: translate(-50%, 22px);
-}
+/* app.js adds .below when it flips the box UNDERNEATH the marker. */
 .callout.below::after {
   bottom: auto;
   top: -8px;
@@ -273,27 +277,59 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* ---- "How this works" footer ---------------------------------------- */
-.how {
+/* ---- Per-game info bar (bottom panel) -------------------------------- */
+.info {
   border-top: 1px solid var(--line);
   background: var(--card);
-  padding: 48px 0 64px;
+  padding: 40px 0 64px;
 }
 
-.how h2 { font-size: 1.3rem; margin: 0 0 0.5em; }
+.info .info-game {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 16px;
+}
 
-.how p {
+/* Released / Copies sold — laid out like a museum label's stat block. */
+.info-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 48px;
+  margin: 0 0 20px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.info-stats div { margin: 0; }
+
+.info-stats dt {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin: 0 0 3px;
+}
+
+.info-stats dd {
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+.info-context {
   color: var(--ink-soft);
   max-width: 72ch;
   margin: 0;
 }
 
-.how code {
-  font-family: "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.88em;
-  background: #ece6da;
-  padding: 1px 5px;
-  border-radius: 3px;
+.info-context .info-label {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin: 0 0 4px;
 }
 
 /* ---- Small screens -------------------------------------------------- */
