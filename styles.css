@@ -215,21 +215,25 @@ body {
 }
 
 /* ---- Hotspot popup / callout ---------------------------------------- */
-/* app.js sets left/top in pixels after measuring the box, so the popup is
-   always kept fully inside the viewport. max-width + wrapping keep it
-   readable on a narrow phone as well as a laptop. */
+/* The popup always appears as one box centered over the image, in the
+   same place every time — so it can never be clipped at an edge. The
+   max-width + wrapping keep it readable on a narrow phone or a laptop. */
 .callout {
   position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   z-index: 7;
   width: max-content;
-  max-width: min(280px, 80vw);
+  max-width: min(360px, 86%);
   background: var(--card);
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 6px;
   box-shadow: var(--shadow);
-  padding: 14px 16px;
+  padding: 18px 20px;
   font-size: 0.95rem;
+  cursor: pointer; /* clicking anywhere on the box dismisses it */
 }
 
 .callout h3 {
@@ -238,36 +242,28 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--accent);
-  margin: 0 0 6px;
+  margin: 0 32px 6px 0; /* leave room for the close button */
 }
 
 .callout p { margin: 0; line-height: 1.5; overflow-wrap: break-word; }
 
-/* Little arrow that points at the marker. Its horizontal position is set
-   by app.js (via --arrow-left) so it still points at the dot even after
-   the box has been nudged sideways to stay on screen. */
-.callout::after {
-  content: "";
+/* Corner close (X) button. */
+.callout-close {
   position: absolute;
-  left: var(--arrow-left, 50%);
-  transform: translateX(-50%);
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
+  top: 6px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
 }
 
-/* Default: box sits ABOVE the marker, arrow points down from its bottom. */
-.callout::after {
-  bottom: -8px;
-  border-top: 8px solid var(--card);
-}
-
-/* app.js adds .below when it flips the box UNDERNEATH the marker. */
-.callout.below::after {
-  bottom: auto;
-  top: -8px;
-  border-top: none;
-  border-bottom: 8px solid var(--card);
-}
+.callout-close:hover { color: var(--accent); background: #ece6da; }
 
 .hint {
   font-family: var(--sans);

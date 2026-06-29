@@ -119,7 +119,7 @@ const SESSIONS = [
     game: "Red Dead Redemption 2",
     meta: {
       released: "2018 (Rockstar Games)",
-      copiesSold: "Roughly 77 million (confirm against my paper's figure)",
+      copiesSold: "Roughly 77 million",
       context:
         "Set in 1899, at the closing of the American frontier. The game stages the tension between a vanishing wilderness and an industrializing, urbanizing nation as railroads, cities, and federal power press in on the open range. Its detailed environment is dense enough that players have been shown to learn to identify real fauna simply by playing (Crowley et al.).",
     },
@@ -195,7 +195,7 @@ const SESSIONS = [
     meta: {
       released: "2013 (Ubisoft)",
       copiesSold:
-        "Part of a franchise that has sold 200+ million (add a Black Flag-specific figure if I supply one)",
+        "Around 15 million (the best-selling game in the Assassin's Creed franchise)",
       context:
         "Set in the Caribbean during the early-eighteenth-century “Golden Age of Piracy,” amid competing Spanish, British, and French colonial empires. Beneath the pirate fantasy sits the real infrastructure of Atlantic empire — maritime trade routes, colonial port cities, naval power, and the slave economy that underwrote them.",
     },

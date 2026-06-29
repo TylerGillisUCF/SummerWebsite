@@ -134,9 +134,19 @@
   // ===================================================================
   // 4. CALLOUTS — the little popup shown when a hotspot is clicked.
   // ===================================================================
+  // The popup is ALWAYS shown as a single box centered over the image,
+  // in the same fixed position no matter which marker was clicked. This
+  // guarantees it can never be clipped at an edge on any screen size.
   function openCallout(figure, dot, hotspot) {
     var callout = document.createElement("div");
     callout.className = "callout";
+
+    // An explicit close (X) button in the corner.
+    var close = document.createElement("button");
+    close.className = "callout-close";
+    close.setAttribute("aria-label", "Close");
+    close.textContent = "×"; // ×
+    callout.appendChild(close);
 
     var h3 = document.createElement("h3");
     h3.textContent = hotspot.title;
@@ -145,74 +155,14 @@
     callout.appendChild(h3);
     callout.appendChild(p);
 
-    // Add it first (hidden) so we can measure its real size, then we work
-    // out a position that keeps the whole box inside the viewport.
-    callout.style.visibility = "hidden";
-    callout.style.left = "0px";
-    callout.style.top = "0px";
+    // Clicking the box itself (including the X) dismisses it.
+    callout.addEventListener("click", function (event) {
+      event.stopPropagation();
+      closeAllCallouts();
+    });
+
     figure.appendChild(callout);
-
-    positionCallout(figure, dot, hotspot, callout);
-
-    callout.style.visibility = "visible";
     dot.setAttribute("aria-expanded", "true");
-  }
-
-  // Work out left/top (in pixels, inside the figure) for the popup so that
-  // it never runs off any edge of the screen:
-  //   • near the right edge  -> the box shifts left to stay on screen
-  //   • near the top edge    -> the box opens below the marker
-  //   • near the bottom edge -> the box opens above the marker
-  //   • always clamped so it can't spill past the left or right edge
-  function positionCallout(figure, dot, hotspot, callout) {
-    var figW = figure.clientWidth;
-    var figH = figure.clientHeight;
-    var cw = callout.offsetWidth;
-    var ch = callout.offsetHeight;
-    var r = dot.offsetWidth / 2; // marker radius
-    var gap = 14; // breathing room between marker and box
-    var edge = 8; // keep at least this far from any edge
-
-    // Marker centre, in pixels relative to the figure.
-    var mx = (hotspot.x / 100) * figW;
-    var my = (hotspot.y / 100) * figH;
-
-    // Where the figure currently sits in the viewport — lets us clamp the
-    // box against the actual window, which matters most on phones.
-    var rect = figure.getBoundingClientRect();
-
-    // ---- Horizontal: centre on the marker, then clamp on screen ----
-    var left = mx - cw / 2;
-    var minLeft = Math.max(edge, edge - rect.left); // never past left edge
-    var maxLeft = Math.min(
-      figW - cw - edge,
-      window.innerWidth - edge - cw - rect.left
-    );
-    if (maxLeft < minLeft) maxLeft = minLeft; // box wider than space: pin left
-    if (left < minLeft) left = minLeft;
-    if (left > maxLeft) left = maxLeft;
-
-    // ---- Vertical: prefer ABOVE; flip BELOW if there isn't room ----
-    var aboveTop = my - r - gap - ch;
-    var belowTop = my + r + gap;
-    var roomAbove = rect.top + aboveTop >= edge; // fits above within viewport
-    var below = !roomAbove;
-    var top = below ? belowTop : aboveTop;
-    if (below) callout.classList.add("below");
-
-    // Last-resort clamp so the box is always fully visible vertically.
-    var minTop = edge - rect.top;
-    var maxTop = window.innerHeight - edge - ch - rect.top;
-    if (top < minTop) top = minTop;
-    if (maxTop > minTop && top > maxTop) top = maxTop;
-
-    // ---- Point the arrow back at the marker, even after nudging ----
-    var arrowX = mx - left;
-    arrowX = Math.max(14, Math.min(cw - 14, arrowX));
-    callout.style.setProperty("--arrow-left", arrowX + "px");
-
-    callout.style.left = left + "px";
-    callout.style.top = top + "px";
   }
 
   // Remove every open popup and reset every marker to "closed".
@@ -233,9 +183,6 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") closeAllCallouts();
   });
-  // A popup's position is measured against the window, so close any open
-  // one if the window is resized to avoid it ending up misaligned.
-  window.addEventListener("resize", closeAllCallouts);
 
   // ===================================================================
   // 5. PER-GAME INFO BAR — light metadata + historical context for the
